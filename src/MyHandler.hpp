@@ -9,14 +9,23 @@
 #define MYHANDLER_HPP_
 
 #include <iostream>
+#include <unordered_map>
 #include <Poco/SAX/Attributes.h>
 #include <Poco/SAX/ContentHandler.h>
 #include <Poco/SAX/SAXParser.h>
 
+#include "Reading.hpp"
+
 class MyHandler: public Poco::XML::ContentHandler {
+private:
+    std::string _id {0};
+    std::unordered_map<std::string, Reading> _reading {};
+
 public:
     MyHandler();
     virtual ~MyHandler();
+
+    std::string id();
 
     // ContentHandler overrides, begin.
     void setDocumentLocator(const Poco::XML::Locator* loc);
