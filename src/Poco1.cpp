@@ -18,5 +18,11 @@ int main() {
 
     auto id = handler.id();
     cout << "last id seen: " << id << endl;
+
+    auto um = handler.readings();
+    cout << "readings size: " << um.size() << endl;
+    for (auto& i : um) {
+        cout << "key: " << i.first << endl;
+    }
 	return 0;
 }

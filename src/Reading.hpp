@@ -9,6 +9,7 @@
 #define READING_HPP_
 
 #include <string>
+#include <iostream>
 #include <utility>
 
 class Reading {
