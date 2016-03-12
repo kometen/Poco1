@@ -22,7 +22,8 @@ int main() {
     auto um = handler.readings();
     for (auto& i : um) {
         for (auto& j : i.second) {
-            cout << i.first << ", " << std::get<0>(j.measuredValue()) << ", " << std::get<1>(j.measuredValue()) << endl;
+            auto v = j.measuredValue();
+            cout << i.first << ", " << v.first << ", " << v.second << endl;
         }
     }
 	return 0;
