@@ -64,7 +64,7 @@ void MyHandler::endElement(const Poco::XML::XMLString& uri, const Poco::XML::XML
         // We reached the end of one site, emplace the vector in the unordered_map.
         _readings.emplace(_id, _reading);
         // And empty the _reading vector.
-        _reading.empty();
+        _reading.clear();
     }
 }
 

@@ -20,9 +20,10 @@ int main() {
     cout << "last id seen: " << id << endl;
 
     auto um = handler.readings();
-    cout << "readings size: " << um.size() << endl;
     for (auto& i : um) {
-        cout << "key: " << i.first << endl;
+        for (auto& j : i.second) {
+            cout << i.first << ", " << std::get<0>(j.measuredValue()) << ", " << std::get<1>(j.measuredValue()) << endl;
+        }
     }
 	return 0;
 }
