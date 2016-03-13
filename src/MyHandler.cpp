@@ -20,7 +20,8 @@ void MyHandler::endDocument() {
 }
 
 void MyHandler::startElement(const Poco::XML::XMLString& namespaceURI, const Poco::XML::XMLString& localName, const Poco::XML::XMLString& qname, const Poco::XML::Attributes& attributes) {
-    if (qname == "siteMeasurements") { // We have reached the actual weather data in the xml string.
+    // We have reached the actual weather data in the xml string.
+    if (qname == "siteMeasurements") {
         weather_data = true;
     }
     // Set counter to zero. When counter reaches three the current qname value is used as key.
@@ -70,7 +71,7 @@ void MyHandler::endElement(const Poco::XML::XMLString& uri, const Poco::XML::XML
 
 void MyHandler::characters(const Poco::XML::XMLChar ch[], int start, int length) {
     if (weather_data) {
-        std::cout << _id << ", " << key << ", " << std::string(ch + start, length) << std::endl;
+//        std::cout << _id << ", " << key << ", " << std::string(ch + start, length) << std::endl;
         Reading r {key, std::string(ch + start, length)};
         _reading.emplace_back(r);
     }
@@ -93,8 +94,4 @@ void MyHandler::skippedEntity(const Poco::XML::XMLString& name) {
 
 std::unordered_map<std::string, std::vector<Reading>> MyHandler::readings() {
     return _readings;
-}
-
-std::string MyHandler::id() {
-    return _id;
 }

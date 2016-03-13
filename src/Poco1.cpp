@@ -49,16 +49,21 @@ int main(int argc, char* argv[]) {
                 cerr << e.displayText() << endl;
             }
 
+            pqxx::work W(C);
+            std::string json_data {};
+            std::string query {};
             auto um = handler.readings();
             for (auto& i : um) {
+//                query = "insert into readings_json(site_id,measurementTimeDefault,doc) values"
+                json_data = "";
+                json_data = "{\"site_id\":\"" + i.first + "\"";
                 for (auto& j : i.second) {
                     auto v = j.measuredValue();
-                    cout << i.first << ", " << v.first << ", " << v.second << endl;
+                    json_data += ",\"" + v.first + "\":\"" + v.second + "\"";
                 }
+                json_data += "}";
+                cout << json_data << endl;
             }
-
-            auto id = handler.id();
-            cout << "last id seen: " << id << endl;
 
             C.disconnect();
             return EXIT_SUCCESS;

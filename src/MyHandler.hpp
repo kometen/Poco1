@@ -32,7 +32,6 @@ public:
     MyHandler();
     virtual ~MyHandler();
 
-    std::string id();
     std::unordered_map<std::string, std::vector<Reading>> readings();
 
     // ContentHandler overrides, begin.
