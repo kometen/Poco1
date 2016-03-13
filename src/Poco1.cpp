@@ -1,30 +1,77 @@
+#include <curlpp/cURLpp.hpp>
+#include <curlpp/Easy.hpp>
+#include <curlpp/Options.hpp>
+#include <curlpp/Exception.hpp>
+
+#include <pqxx/pqxx>
+
 #include "MyHandler.hpp"
 
 using namespace std;
 
-int main() {
-	auto s = "<d2LogicalModel modelBaseVersion=\"2\" xmlns=\"http://datex2.eu/schema/2/2_0\"><exchange><supplierIdentification><country>no</country><nationalIdentifier>Norwegian Public Roads Administration</nationalIdentifier></supplierIdentification></exchange><payloadPublication xsi:type=\"MeasuredDataPublication\" lang=\"nob\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><publicationTime>2016-02-18T20:46:33.111+01:00</publicationTime><publicationCreator><country>no</country><nationalIdentifier>Norwegian Public Roads Administration</nationalIdentifier></publicationCreator><measurementSiteTableReference targetClass=\"MeasurementSiteTable\" version=\"20160217163843000\" id=\"WOST\"/><headerInformation><confidentiality>noRestriction</confidentiality><informationStatus>real</informationStatus></headerInformation><siteMeasurements><measurementSiteReference targetClass=\"MeasurementSiteRecord\" version=\"7\" id=\"150\"/><measurementTimeDefault>2016-02-18T20:30:00.000+01:00</measurementTimeDefault><measuredValue index=\"201\"><measuredValue><basicData xsi:type=\"HumidityInformation\"><humidity><relativeHumidity><percentage>74.6</percentage></relativeHumidity></humidity></basicData></measuredValue></measuredValue><measuredValue index=\"2501\"><measuredValue><basicData xsi:type=\"PrecipitationInformation\"><precipitationDetail><precipitationIntensity><millimetresPerHourIntensity>0.0</millimetresPerHourIntensity></precipitationIntensity></precipitationDetail></basicData></measuredValue></measuredValue><measuredValue index=\"801\"><measuredValue><basicData xsi:type=\"RoadSurfaceConditionInformation\"><roadSurfaceConditionMeasurements><roadSurfaceTemperature><temperature>-5.5</temperature></roadSurfaceTemperature></roadSurfaceConditionMeasurements></basicData></measuredValue></measuredValue><measuredValue index=\"901\"><measuredValue><basicData xsi:type=\"WindInformation\"><wind><windSpeed><speed>11.52</speed></windSpeed></wind></basicData></measuredValue></measuredValue><measuredValue index=\"1001\"><measuredValue><basicData xsi:type=\"WindInformation\"><wind><windDirectionBearing><directionBearing>343</directionBearing></windDirectionBearing></wind></basicData></measuredValue></measuredValue><measuredValue index=\"101\"><measuredValue><basicData xsi:type=\"TemperatureInformation\"><temperature><airTemperature><temperature>-6.3</temperature></airTemperature></temperature></basicData></measuredValue></measuredValue><measuredValue index=\"301\"><measuredValue><basicData xsi:type=\"TemperatureInformation\"><temperature><dewPointTemperature><temperature>-10.1</temperature></dewPointTemperature></temperature></basicData></measuredValue></measuredValue><measuredValue index=\"1401\"><measuredValue><basicData xsi:type=\"VisibilityInformation\"><visibility><minimumVisibilityDistance><integerMetreDistance>20000</integerMetreDistance></minimumVisibilityDistance></visibility></basicData></measuredValue></measuredValue></siteMeasurements><siteMeasurements><measurementSiteReference targetClass=\"MeasurementSiteRecord\" version=\"4\" id=\"275\"/><measurementTimeDefault>2016-02-18T20:40:00.000+01:00</measurementTimeDefault><measuredValue index=\"201\"><measuredValue><basicData xsi:type=\"HumidityInformation\"><humidity><relativeHumidity><percentage>73.4</percentage></relativeHumidity></humidity></basicData></measuredValue></measuredValue><measuredValue index=\"2501\"><measuredValue><basicData xsi:type=\"PrecipitationInformation\"><precipitationDetail><precipitationIntensity><millimetresPerHourIntensity>0.0</millimetresPerHourIntensity></precipitationIntensity></precipitationDetail></basicData></measuredValue></measuredValue><measuredValue index=\"801\"><measuredValue><basicData xsi:type=\"RoadSurfaceConditionInformation\"><roadSurfaceConditionMeasurements><roadSurfaceTemperature><temperature>-6.9</temperature></roadSurfaceTemperature></roadSurfaceConditionMeasurements></basicData></measuredValue></measuredValue><measuredValue index=\"901\"><measuredValue><basicData xsi:type=\"WindInformation\"><wind><windSpeed><speed>19.8</speed></windSpeed></wind></basicData></measuredValue></measuredValue><measuredValue index=\"3001\"><measuredValue><basicData xsi:type=\"WindInformation\"><wind><maximumWindSpeed><speed>20.16</speed></maximumWindSpeed></wind></basicData></measuredValue></measuredValue><measuredValue index=\"1001\"><measuredValue><basicData xsi:type=\"WindInformation\"><wind><windDirectionBearing><directionBearing>273</directionBearing></windDirectionBearing></wind></basicData></measuredValue></measuredValue><measuredValue index=\"101\"><measuredValue><basicData xsi:type=\"TemperatureInformation\"><temperature><airTemperature><temperature>-2.6</temperature></airTemperature></temperature></basicData></measuredValue></measuredValue><measuredValue index=\"301\"><measuredValue><basicData xsi:type=\"TemperatureInformation\"><temperature><dewPointTemperature><temperature>-6.7</temperature></dewPointTemperature></temperature></basicData></measuredValue></measuredValue><measuredValue index=\"1401\"><measuredValue><basicData xsi:type=\"VisibilityInformation\"><visibility><minimumVisibilityDistance><integerMetreDistance>2000</integerMetreDistance></minimumVisibilityDistance></visibility></basicData></measuredValue></measuredValue></siteMeasurements><siteMeasurements><measurementSiteReference targetClass=\"MeasurementSiteRecord\" version=\"4\" id=\"100\"/><measurementTimeDefault>2016-02-18T20:40:00.000+01:00</measurementTimeDefault><measuredValue index=\"201\"><measuredValue><basicData xsi:type=\"HumidityInformation\"><humidity><relativeHumidity><percentage>85.7</percentage></relativeHumidity></humidity></basicData></measuredValue></measuredValue><measuredValue index=\"2501\"><measuredValue><basicData xsi:type=\"PrecipitationInformation\"><precipitationDetail><precipitationIntensity><millimetresPerHourIntensity>0.0</millimetresPerHourIntensity></precipitationIntensity></precipitationDetail></basicData></measuredValue></measuredValue><measuredValue index=\"801\"><measuredValue><basicData xsi:type=\"RoadSurfaceConditionInformation\"><roadSurfaceConditionMeasurements><roadSurfaceTemperature><temperature>-4.2</temperature></roadSurfaceTemperature></roadSurfaceConditionMeasurements></basicData></measuredValue></measuredValue><measuredValue index=\"101\"><measuredValue><basicData xsi:type=\"TemperatureInformation\"><temperature><airTemperature><temperature>-5.3</temperature></airTemperature></temperature></basicData></measuredValue></measuredValue><measuredValue index=\"301\"><measuredValue><basicData xsi:type=\"TemperatureInformation\"><temperature><dewPointTemperature><temperature>-7.3</temperature></dewPointTemperature></temperature></basicData></measuredValue></measuredValue><measuredValue index=\"1401\"><measuredValue><basicData xsi:type=\"VisibilityInformation\"><visibility><minimumVisibilityDistance><integerMetreDistance>9999</integerMetreDistance></minimumVisibilityDistance></visibility></basicData></measuredValue></measuredValue></siteMeasurements></payloadPublication></d2LogicalModel>";
-	MyHandler handler {};
-	Poco::XML::SAXParser parser {};
-	parser.setFeature(Poco::XML::XMLReader::FEATURE_NAMESPACES, false);
-	parser.setFeature(Poco::XML::XMLReader::FEATURE_NAMESPACE_PREFIXES, true);
-	parser.setContentHandler(&handler);
-
-	try {
-        parser.parseString(s);
-    } catch (Poco::Exception& e) {
-        cerr << e.displayText() << endl;
+int main(int argc, char* argv[]) {
+    if (argc != 3) {
+        cerr << "Usage: " << argv[0] << " <username> <password>" << endl;
+        return EXIT_FAILURE;
     }
+    try {
+        try {
+            pqxx::connection C("dbname=weather user=claus hostaddr=127.0.0.1 port=5432");
+            if (!C.is_open()) {
+                cerr << "Unable to connect to database" << C.dbname() << endl;
+                return EXIT_FAILURE;
+            }
 
-    auto id = handler.id();
-    cout << "last id seen: " << id << endl;
+            const string url = "https://www.vegvesen.no/ws/no/vegvesen/veg/trafikkpublikasjon/vaer/1/GetMeasuredWeatherData/";
 
-    auto um = handler.readings();
-    for (auto& i : um) {
-        for (auto& j : i.second) {
-            auto v = j.measuredValue();
-            cout << i.first << ", " << v.first << ", " << v.second << endl;
+            std::string username = argv[1];
+            std::string password = argv[2];
+            std::string credentials = username + ":" + password;
+
+            curlpp::Cleanup cleaner;
+            curlpp::Easy request;
+
+            request.setOpt(new curlpp::options::Url(url));
+            request.setOpt(new curlpp::options::UserPwd(credentials));
+
+            ostringstream out;
+            out << request;
+
+            MyHandler handler {};
+            Poco::XML::SAXParser parser {};
+            parser.setFeature(Poco::XML::XMLReader::FEATURE_NAMESPACES, false);
+            parser.setFeature(Poco::XML::XMLReader::FEATURE_NAMESPACE_PREFIXES, true);
+            parser.setContentHandler(&handler);
+
+            try {
+                parser.parseString(out.str());
+            } catch (Poco::Exception& e) {
+                cerr << e.displayText() << endl;
+            }
+
+            auto um = handler.readings();
+            for (auto& i : um) {
+                for (auto& j : i.second) {
+                    auto v = j.measuredValue();
+                    cout << i.first << ", " << v.first << ", " << v.second << endl;
+                }
+            }
+
+            auto id = handler.id();
+            cout << "last id seen: " << id << endl;
+
+            C.disconnect();
+            return EXIT_SUCCESS;
+        } catch (const exception& e) {
+            cerr << e.what() << endl;
+            return EXIT_FAILURE;
         }
+
+    } catch (curlpp::LogicError& e) {
+        cout << e.what() << endl;
+    } catch (curlpp::RuntimeError& e) {
+        cout << e.what() << endl;
     }
-	return 0;
+
+    return EXIT_FAILURE;
 }
