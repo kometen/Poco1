@@ -49,23 +49,40 @@ int main(int argc, char* argv[]) {
                 cerr << e.displayText() << endl;
             }
 
-            pqxx::work W(C);
             std::string json_data {};
             std::string query {};
+            std::string date {};
+            std::string prepared_table = "prep";
             auto um = handler.readings();
             for (auto& i : um) {
-//                query = "insert into readings_json(site_id,measurementTimeDefault,doc) values"
+                pqxx::work W(C);
+                // Set to default values.
+                query = "insert into readings_json(site_id,measurementTimeDefault,doc) values ($1,$2,$3)";
                 json_data = "";
+                date = "";
                 json_data = "{\"site_id\":\"" + i.first + "\"";
+
                 for (auto& j : i.second) {
                     auto v = j.measuredValue();
                     json_data += ",\"" + v.first + "\":\"" + v.second + "\"";
+                    // When we read the date remember it for storing in db.
+                    if (v.first == "measurementTimeDefault") {
+                        date = v.second;
+                        cout << date << endl;
+                    }
                 }
                 json_data += "}";
-                cout << json_data << endl;
+                C.prepare(prepared_table, query);
+                try {
+                    W.prepared(prepared_table)(i.first)(date)(json_data).exec();
+                    W.commit();
+                } catch (const pqxx::sql_error& e) {
+                    cerr << "unable to insert, error: " << e.what() << endl;
+                }
+//                cout << json_data << endl;
             }
-
             C.disconnect();
+
             return EXIT_SUCCESS;
         } catch (const exception& e) {
             cerr << e.what() << endl;
