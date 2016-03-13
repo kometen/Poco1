@@ -68,7 +68,6 @@ int main(int argc, char* argv[]) {
                     // When we read the date remember it for storing in db.
                     if (v.first == "measurementTimeDefault") {
                         date = v.second;
-                        cout << date << endl;
                     }
                 }
                 json_data += "}";
@@ -79,7 +78,6 @@ int main(int argc, char* argv[]) {
                 } catch (const pqxx::sql_error& e) {
                     cerr << "unable to insert, error: " << e.what() << endl;
                 }
-//                cout << json_data << endl;
             }
             C.disconnect();
 
