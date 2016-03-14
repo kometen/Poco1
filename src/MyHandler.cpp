@@ -36,20 +36,13 @@ void MyHandler::startElement(const Poco::XML::XMLString& namespaceURI, const Poc
         key = qname;
     }
 
-//    std::cout << "qname: " << qname << std::endl;
-    if (attributes.getLength()) {
-        x = attributes.getLength();
-        for (int i = 0; i < x; ++i) {
-//            std::cout << "getQName(): " << attributes.getQName(i) << ", getValue(): " << attributes.getValue(i) << std::endl;
-        }
-    }
     // Get id of site.
     if (qname == "measurementSiteReference") {
         if (attributes.getLength()) {
             x = attributes.getLength();
             for (int i = 0; i < x; ++i) {
                 if (attributes.getQName(i) == "id") {
-                    _id = attributes.getValue(i);
+                    _site_id = attributes.getValue(i);
                 }
             }
         }
@@ -63,7 +56,7 @@ void MyHandler::endElement(const Poco::XML::XMLString& uri, const Poco::XML::XML
     }
     if (qname == "siteMeasurements") {
         // We reached the end of one site, emplace the vector in the unordered_map.
-        _readings.emplace(_id, _reading);
+        _readings.emplace(_site_id, _reading);
         // And empty the _reading vector.
         _reading.clear();
     }

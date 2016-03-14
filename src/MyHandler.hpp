@@ -24,7 +24,7 @@ private:
     int counter {0};            // Increment by one. When it reaches three we have the key.
     std::string key {};         // Key and value are used to add to Reading.
     std::string value {};
-    std::string _id {0};
+    std::string _site_id {0};
     std::vector<Reading> _reading {};
     std::unordered_map<std::string, std::vector<Reading>> _readings {};
 
