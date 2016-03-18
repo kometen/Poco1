@@ -16,12 +16,36 @@ int main(int argc, char* argv[]) {
     }
     try {
         try {
-            pqxx::connection C("dbname=weather user=claus hostaddr=127.0.0.1 port=5432");
-            if (!C.is_open()) {
-                cerr << "Unable to connect to database" << C.dbname() << endl;
+            pqxx::connection B("dbname=weather user=claus hostaddr=127.0.0.1 port=5432");
+            if (!B.is_open()) {
+                cerr << "Unable to connect to database" << B.dbname() << endl;
                 return EXIT_FAILURE;
             }
 
+            // Get a list of current locations.
+            std::string query = "select * from locations";
+            pqxx::nontransaction N(B);
+            pqxx::result R(N.exec(query));
+
+            // lum, location unordered_map, ls location string.
+            unordered_map<std::string, std::string> lum {};
+            std::string ls {};
+            // Add site_id to unordered_map and format columns in json-format.
+            // Omit ending curly brace, since more data may be appended.
+            for (pqxx::result::const_iterator c = R.begin(); c != R.end(); ++c) {
+                ls  = "{\"site_id\":\"" + c[1].as<std::string>();
+                ls += "\",\"measurementSiteName\":\"" + c[2].as<std::string>();
+                ls += "\",\"coordinate\":\"" + c[3].as<std::string>() + "\"";
+                lum.emplace(to_string(c[1].as<int>()), ls);
+            }
+
+            for (auto& i : lum) {
+                cout << i.second << endl;
+            }
+
+            B.disconnect();
+
+            // Weather data collected.
             const string url = "https://www.vegvesen.no/ws/no/vegvesen/veg/trafikkpublikasjon/vaer/1/GetMeasuredWeatherData/";
 
             std::string username = argv[1];
@@ -49,8 +73,8 @@ int main(int argc, char* argv[]) {
                 cerr << e.displayText() << endl;
             }
 
+            pqxx::connection C("dbname=weather user=claus hostaddr=127.0.0.1 port=5432");
             std::string json_data {};
-            std::string query {};
             std::string date {};
             std::string prepared_table = "prep";
             auto um = handler.readings();
@@ -60,12 +84,12 @@ int main(int argc, char* argv[]) {
                 query = "insert into readings_json(site_id,measurementTimeDefault,doc) values ($1,$2,$3)";
                 json_data = "";
                 date = "";
-                json_data = "{\"site_id\":\"" + i.first + "\"";
+                json_data = lum.at(i.first);
 
                 for (auto& j : i.second) {
                     auto v = j.measuredValue();
                     json_data += ",\"" + v.first + "\":\"" + v.second + "\"";
-                    // When we read the date remember it for storing in db.
+                    // When we read the date remember it for storing in the database.
                     if (v.first == "measurementTimeDefault") {
                         date = v.second;
                     }
