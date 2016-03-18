@@ -27,7 +27,10 @@ int main(int argc, char* argv[]) {
             pqxx::nontransaction N(B);
             pqxx::result R(N.exec(query));
 
-            // lum, location unordered_map, ls location string.
+            // coum, coordinate unordered_map
+            // lum, location unordered_map
+            // ls location string
+            unordered_map<std::string, std::string> coum {};
             unordered_map<std::string, std::string> lum {};
             std::string ls {};
             // Add site_id to unordered_map and format columns in json-format.
@@ -38,6 +41,7 @@ int main(int argc, char* argv[]) {
                 ls += "\",\"coordinate\":\"" + c[2].as<std::string>();
                 ls += "\",\"latitude\":\"" + c[4].as<std::string>();
                 ls += "\",\"longitude\":\"" + c[3].as<std::string>() + "\"";
+                coum.emplace(c[0].as<std::string>(), c[2].as<std::string>());
                 lum.emplace(c[0].as<std::string>(), ls);
             }
 
@@ -76,10 +80,11 @@ int main(int argc, char* argv[]) {
             std::string date {};
             std::string prepared_table = "prep";
             auto um = handler.readings();
+            // i in loop is site_id.
             for (auto& i : um) {
                 pqxx::work W(C);
                 // Set to default values.
-                query = "insert into readings_json(site_id,measurementTimeDefault,doc) values ($1,$2,$3)";
+                query = "insert into readings_json(site_id,measurementtimedefault,coordinate,doc) values ($1,$2,$3,$4)";
                 json_data = "";
                 date = "";
                 json_data = lum.at(i.first);
@@ -95,7 +100,7 @@ int main(int argc, char* argv[]) {
                 json_data += "}";
                 C.prepare(prepared_table, query);
                 try {
-                    W.prepared(prepared_table)(i.first)(date)(json_data).exec();
+                    W.prepared(prepared_table)(i.first)(date)(coum.at(i.first))(json_data).exec();
                     W.commit();
                 } catch (const pqxx::sql_error& e) {
                     cerr << "unable to insert, error: " << e.what() << endl;
