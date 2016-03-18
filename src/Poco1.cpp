@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
             }
 
             // Get a list of current locations.
-            std::string query = "select * from locations";
+            std::string query = "select site_id,measurementsitename,coordinate,coordinate[0] as longitude,coordinate[1] as latitude from locations";
             pqxx::nontransaction N(B);
             pqxx::result R(N.exec(query));
 
@@ -33,10 +33,12 @@ int main(int argc, char* argv[]) {
             // Add site_id to unordered_map and format columns in json-format.
             // Omit ending curly brace, since more data may be appended.
             for (pqxx::result::const_iterator c = R.begin(); c != R.end(); ++c) {
-                ls  = "{\"site_id\":\"" + c[1].as<std::string>();
-                ls += "\",\"measurementSiteName\":\"" + c[2].as<std::string>();
-                ls += "\",\"coordinate\":\"" + c[3].as<std::string>() + "\"";
-                lum.emplace(to_string(c[1].as<int>()), ls);
+                ls  = "{\"site_id\":\"" + c[0].as<std::string>();
+                ls += "\",\"measurementSiteName\":\"" + c[1].as<std::string>();
+                ls += "\",\"coordinate\":\"" + c[2].as<std::string>();
+                ls += "\",\"latitude\":\"" + c[4].as<std::string>();
+                ls += "\",\"longitude\":\"" + c[3].as<std::string>() + "\"";
+                lum.emplace(c[0].as<std::string>(), ls);
             }
 
             for (auto& i : lum) {
