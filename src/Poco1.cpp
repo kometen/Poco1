@@ -41,10 +41,6 @@ int main(int argc, char* argv[]) {
                 lum.emplace(c[0].as<std::string>(), ls);
             }
 
-            for (auto& i : lum) {
-                cout << i.second << endl;
-            }
-
             B.disconnect();
 
             // Weather data collected.
